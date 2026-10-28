@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recomp &amp; Decomp PC · Progetti nativi</title>
+  <meta name="description" content="Elenco aggiornato dei progetti di recompilazione e decompilazione che portano giochi console su PC in versione nativa.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://thumbnails.pcgamingwiki.com">
+  <link rel="preconnect" href="https://thumbnails.libretro.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230b1017'/><text x='32' y='45' font-family='Inter,sans-serif' font-size='34' font-weight='800' text-anchor='middle' fill='%2338bdf8'>R</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="hero__bar">
+        <span class="pill pill--live" id="sourcePill"><span class="pill__dot"></span><span id="sourcePillText">Dati live · PCGamingWiki</span></span>
+        <a class="hero__link" href="https://www.pcgamingwiki.com/wiki/List_of_unofficial_ports" target="_blank" rel="noopener">Lista originale ↗</a>
+      </div>
+
+      <h1 class="hero__title">Recomp <span class="hero__amp">&amp;</span> Decomp <span class="hero__pc">PC</span></h1>
+      <p class="hero__sub">
+        Ogni progetto che riporta un gioco console su PC in versione nativa: recompilazioni statiche,
+        decompilazioni e port nati dal codice sorgente originale. La lista si aggiorna a ogni ricaricamento.
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat__value" id="statTotal">—</span>
+          <span class="stat__label">Progetti</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value stat__value--recomp" id="statRecomp">—</span>
+          <span class="stat__label">Recomp</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value stat__value--decomp" id="statDecomp">—</span>
+          <span class="stat__label">Decomp</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value stat__value--ok" id="statReleased">—</span>
+          <span class="stat__label">Giocabili</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="status" id="statusBar" hidden>
+    <div class="wrap status__inner">
+      <span class="status__dot" id="statusDot"></span>
+      <span id="statusText">Caricamento dati…</span>
+    </div>
+  </div>
+
+  <main class="wrap main">
+    <section class="toolbar" aria-label="Filtri">
+      <div class="search">
+        <svg class="search__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M16.5 16.5L21 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="search" type="search" placeholder="Cerca gioco, port o note…" autocomplete="off" aria-label="Cerca">
+        <kbd class="search__kbd">/</kbd>
+      </div>
+
+      <div class="selects">
+        <label class="select">
+          <span class="select__label">Tipo</span>
+          <select id="type">
+            <option value="all">Tutti</option>
+            <option value="recomp">Recomp</option>
+            <option value="decomp">Decomp</option>
+          </select>
+        </label>
+        <label class="select">
+          <span class="select__label">Piattaforma</span>
+          <select id="platform"><option value="all">Tutte</option></select>
+        </label>
+        <label class="select">
+          <span class="select__label">Stato</span>
+          <select id="state">
+            <option value="released">Giocabili</option>
+            <option value="all">Tutti</option>
+            <option value="dev">In sviluppo</option>
+          </select>
+        </label>
+        <label class="select">
+          <span class="select__label">Ordina</span>
+          <select id="sort">
+            <option value="name-asc">Nome A → Z</option>
+            <option value="name-desc">Nome Z → A</option>
+            <option value="platform-asc">Piattaforma</option>
+            <option value="state-asc">Stato</option>
+          </select>
+        </label>
+        <button class="btn" id="reload" type="button" title="Ricarica i dati dalla sorgente">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 10-2.3 5.7M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Aggiorna</span>
+        </button>
+      </div>
+
+      <div class="chips" id="chips" hidden></div>
+    </section>
+
+    <div class="results">
+      <span id="count">—</span>
+      <span class="results__meta" id="updated">—</span>
+    </div>
+
+    <section id="grid" class="grid" aria-live="polite"></section>
+
+    <div class="empty" id="empty" hidden>
+      <span class="empty__icon">🔍</span>
+      <p class="empty__title">Nessun progetto trovato</p>
+      <p class="empty__text">Prova a cambiare i filtri o a cercare un altro titolo.</p>
+      <button class="btn btn--ghost" id="resetEmpty" type="button">Azzera i filtri</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <p>
+        Dati: <a href="https://www.pcgamingwiki.com/wiki/List_of_unofficial_ports" target="_blank" rel="noopener">PCGamingWiki — List of unofficial ports</a>.
+        Copertine: <a href="https://thumbnails.libretro.com/" target="_blank" rel="noopener">libretro-thumbnails</a> e PCGamingWiki.
+      </p>
+      <p class="footer__note">
+        I progetti appartengono ai rispettivi autori. Nessun file di gioco è incluso o distribuito.
+      </p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
